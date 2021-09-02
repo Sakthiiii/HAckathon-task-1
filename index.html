@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokemon Task</title>
+
+</head>
+<body>
+    <script src="/Hackathon task/script.js"></script>
+
+    <script>
+        
+let app =document.createElement('div');
+document.body.appendChild(app);
+
+const URL= 'https://pokeapi.co/api/v2/pokemon/';
+
+const loading=document.createElement('p')
+loading.innerHTML="Loading..."
+loading.classList.add('loading')
+
+let currentPokemonId=1;
+
+
+async function getpokemon(){
+    let responce= await fetch(`${URL}${currentPokemonId}`);
+    let result= await responce .json();
+    return result;
+}
+
+function creatPokemon(pokemon){
+    let pokemonelement=document.createElement('div');
+    pokemonelement.id="pokemonContainer"
+    pokemonelement.classList.add('pokemon-container')
+
+
+
+    let pokemonimage=document.createElement('img');
+   
+
+
+    pokemonimage. src=pokemon.sprites?.other?.dream_world?.front_defult||
+    
+    pokemon.sprites?.other?.["official-artwork "]?.front_defult||
+    pokemon.sprites?.front_defult;
+    pokemonimage.setAttribute('style',' padding-left:150px ;')
+    // pokemonimage.setAttribute('style',' marging:150px ;')
+    pokemonelement.appendChild(pokemonimage)
+
+
+
+     let pokemoninfo=document.createElement('div')
+     pokemonelement.appendChild(pokemoninfo)
+
+     let pokemonid=document.createElement('p')
+     pokemonid.innerText=pokemon.id;
+     pokemonid.classList.add('pokemon-id')
+     pokemonid.setAttribute('style',' font-size:20px;')
+     pokemoninfo.appendChild(pokemonid);
+
+
+     let pokemonname=document.createElement('p')
+     pokemonname.innerText=pokemon.name[0].toUpperCase() +pokemon.name.slice(1);
+     pokemonname.classList.add('pokemon-name')
+     pokemonname.setAttribute('style','padding:20px','')
+     pokemonname.setAttribute('style','  font-size:30px;')
+    // 
+     pokemoninfo.appendChild(pokemonname);
+
+
+      let pokemontypes =document.createElement('div')
+      pokemontypes.classList.add('pokemon-types');
+      
+      pokemon.types.forEach((type) => {
+          
+        let typeElement=document.createElement('div');
+        typeElement.classList.add('type.type.name')
+        typeElement.innerText=type.type.name;
+        typeElement.setAttribute('style',' font-size:20px;');
+        pokemoninfo.appendChild(typeElement)
+          
+      });
+      pokemoninfo.appendChild(pokemontypes)
+      pokemonelement.appendChild(creatbutton())
+      return pokemonelement;
+
+
+}
+
+async function loadPokemon() {
+    let pokemonelement=document.getElementById('pokemonContainer')
+    pokemonelement.remove();
+
+    app.appendChild(loading)
+
+    const pokemon=await getpokemon();
+    loading.remove();
+
+
+    app.appendChild(creatPokemon(pokemon))
+    
+}
+function goPrev() {
+    if (currentPokemonId <= 1)    return;
+    currentPokemonId -= 1;
+    loadPokemon();
+    
+}
+function goNext() {
+    if (currentPokemonId >=  50)
+    return;
+    currentPokemonId += 1;
+    loadPokemon();
+    
+}
+
+function creatbutton() {
+    const buttonContainer=document.createElement('div');
+    buttonContainer.classList.add('button-container');
+
+    const prevbutton=document.createElement('button')
+    prevbutton.innerText="Prev."
+    buttonContainer.appendChild(prevbutton);
+
+    const nextbutton=document.createElement('button');
+    nextbutton.innerText="Next";
+    buttonContainer.appendChild(nextbutton);
+    nextbutton.addEventListener("click", function () {
+        console.log('clicked next');
+        
+    })
+
+    prevbutton.addEventListener('click',goPrev);
+    nextbutton.addEventListener('click',goNext);
+
+buttonContainer.setAttribute('style','font-size:50px;')
+
+    return buttonContainer;
+}
+
+async function init(){
+    app.appendChild (loading);
+let pokemon= await getpokemon (1);
+let pokeElement=creatPokemon(pokemon)
+app.appendChild(pokeElement)
+loading. remove ();
+
+
+}init();
+    </script>
+</body>
+</html>
